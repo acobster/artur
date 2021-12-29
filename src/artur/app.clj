@@ -5,7 +5,9 @@
     [mount.core :as mount :refer [defstate]]
     [org.httpkit.server :as http]
     [reitit.core :as reitit]
-    [ring.middleware.defaults :as ring]))
+    [ring.middleware.defaults :as ring]
+
+    [artur.xml :as xml]))
 
 (defstate env
   :start (config/load-env))
