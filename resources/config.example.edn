@@ -1,0 +1,10 @@
+{;; HTTP port to listen on for API requests.
+ :port 3000
+ ;; Twilio number to send SMS messages from.
+ ;; This should be the same one you receive at.
+ :twilio-number "+11235551234"
+ ;; Phone numbers that are pre-authorized to initiate downloads.
+ :authorized-numbers #{"+12345551234" ,,,}
+ ;; Twilio credentials. Get these from your account.
+ :twilio-account-sid "your account SID"
+ :twilio-auth-token "your auth token"}
