@@ -23,11 +23,9 @@
       xml/wrap-xml-document
       (ring/wrap-defaults
         (assoc ring/api-defaults
+               ;; NOTE: params are already urlencoded and keywordized.
                :cookies false
-               :params {:keywordize true
-                        :urlencoded true}
-               ;; TODO https://github.com/ring-clojure/ring-defaults#customizing
-               ))))
+               :security {:frame-options :deny}))))
 
 (defonce stop-server (atom nil))
 (defstate http-server
