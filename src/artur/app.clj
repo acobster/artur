@@ -16,17 +16,18 @@
   (prn req)
   {:status 200
    :headers {"content-type" "application/xml"}
-   :body "oh hai"})
+   :body [:Response [:Message "body text"]]})
 
 (def app
-  (ring/wrap-defaults
-    handler
-    (assoc ring/api-defaults
-           :cookies false
-           :params {:keywordize true
-                    :urlencoded true}
-           ;; TODO https://github.com/ring-clojure/ring-defaults#customizing
-           )))
+  (-> handler
+      xml/wrap-xml-document
+      (ring/wrap-defaults
+        (assoc ring/api-defaults
+               :cookies false
+               :params {:keywordize true
+                        :urlencoded true}
+               ;; TODO https://github.com/ring-clojure/ring-defaults#customizing
+               ))))
 
 (defonce stop-server (atom nil))
 (defstate http-server
