@@ -41,4 +41,7 @@
     (mount/stop)
     (mount/start))
 
-  (slurp "http://localhost:3003"))
+  (slurp "http://localhost:3003")
+
+  (require '[kaocha.repl :as k])
+  (k/run :unit))
