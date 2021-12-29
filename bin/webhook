@@ -12,7 +12,14 @@
    ["-u" "--url URL" "Base URL"
     :default "http://localhost"]
    ["-i" "--headers" "Print the response headers"]
-   ["-h" "--help"]])
+   ["-h" "--help" "Print these usage instructions"]])
+
+(defn print-usage [summary]
+  (println "webhook [OPTIONS] your text message...")
+  (println)
+  (println "OPTIONS:")
+  (println)
+  (println summary))
 
 (defn do-request [{:keys [url port]} text]
   (curl/post (str url ":" port) {:form-params {"Body" text}}))
@@ -22,7 +29,7 @@
         (cli/parse-opts args cli-opts)]
     (cond
       (seq errors) (doall (for [e errors] (println e)))
-      (:help options) (println summary)
+      (:help options) (print-usage summary)
       :else
       (let [{:keys [headers body] :as res}
             (do-request options (apply str arguments))]
