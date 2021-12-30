@@ -7,6 +7,7 @@
     [reitit.core :as reitit]
     [ring.middleware.defaults :as ring]
 
+    [artur.core :as core]
     [artur.store :as store]
     [artur.xml :as xml]))
 
@@ -15,10 +16,10 @@
 
 (defn handler [req]
   (prn (select-keys req [:params :conversation]))
-  {:status 200
-   :headers {"content-type" "application/xml"}
-   :conversation {:today (Date.)}
-   :body [:Response [:Message "body text"]]})
+  (merge
+    {:status 200
+     :headers {"content-type" "application/xml"}}
+    (core/respond req)))
 
 (def app
   (-> handler
