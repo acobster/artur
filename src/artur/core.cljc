@@ -6,10 +6,11 @@
 (defn- twiml [& strs]
   [:Response [:Message (join " " strs)]])
 
-(defn respond [{{text :Body} :params
+(defn respond [{{text :Body from :From} :params
                 convo :conversation}]
   (let [t (partial i18n/translate (:lang convo :en))
-        text (lower-case (trim text))]
+        trimmed (trim text)
+        text (lower-case trimmed)]
     (cond
       ;; Robot wishes to be helpful
       (= (t :help) text)
@@ -22,6 +23,11 @@
             t (partial i18n/translate lang)]
         {:body (twiml "👍" (t :help-text))
          :conversation (assoc convo :lang lang)})
+
+      (starts-with? text "http")
+      {:body (twiml (t :downloading))
+       :conversation (assoc convo :state :in-progress)
+       :effects [[:download {:url trimmed :from from}]]}
 
       ;; Robot is confused
       :else

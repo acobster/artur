@@ -3,6 +3,8 @@
 (def i18n
   {:en {:sorry "Beep boop, I'm just a robot 🤖"
         :help-text "To get started, send me a torrent file URL."
+        :downloading (str "Downloading! I'll notify you when it's finished."
+                          " Text \"update\" to see progress.")
         :help "help"}
 
    :es {:sorry "Lo siento, solo soy un robot 🤖"

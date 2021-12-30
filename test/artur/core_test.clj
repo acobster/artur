@@ -62,6 +62,19 @@
      :conversation {:state :waiting-for-url
                     :lang :en}}
 
+    ;; Finally, an actual URL to download...
+    {:body [:Response [:Message
+                       (str "Downloading! I'll notify you when it's finished."
+                            " Text \"update\" to see progress.")]]
+     :conversation {:state :in-progress
+                    :lang :en}
+     :effects [[:download {:url "http://example.com/starwars.torrent"
+                           :from "+12345556789"}]]}
+    {:params {:Body "http://example.com/starwars.torrent"
+              :From "+12345556789"}
+     :conversation {:state :waiting-for-url
+                    :lang :en}}
+
     ))
 
 (comment
