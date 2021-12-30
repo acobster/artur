@@ -8,6 +8,7 @@
     [ring.middleware.defaults :as ring]
 
     [artur.core :as core]
+    [artur.effects :as fx]
     [artur.store :as store]
     [artur.xml :as xml]))
 
@@ -15,7 +16,6 @@
   :start (config/load-env))
 
 (defn handler [req]
-  (prn (select-keys req [:params :conversation]))
   (merge
     {:status 200
      :headers {"content-type" "application/xml"}}
@@ -24,6 +24,7 @@
 (def app
   (-> handler
       store/wrap-conversation
+      fx/wrap-effects
       xml/wrap-xml-document
       (ring/wrap-defaults
         (assoc ring/api-defaults

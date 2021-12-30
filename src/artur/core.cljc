@@ -26,5 +26,4 @@
       ;; Robot is confused
       :else
       {:body (twiml (t :sorry) (t :help-text))
-       :conversation convo}
-      )))
+       :conversation convo})))
