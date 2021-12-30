@@ -11,6 +11,8 @@
     :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]
    ["-u" "--url URL" "Base URL"
     :default "http://localhost"]
+   ["-f" "--from PHONE" "From phone number"
+    :default "+12345556789"]
    ["-i" "--headers" "Print the response headers"]
    ["-h" "--help" "Print these usage instructions"]])
 
@@ -21,8 +23,10 @@
   (println)
   (println summary))
 
-(defn do-request [{:keys [url port]} text]
-  (curl/post (str url ":" port) {:form-params {"Body" text}}))
+(defn do-request [{:keys [url port from]} text]
+  (curl/post (str url ":" port) {:form-params
+                                 {"Body" text
+                                  "From" from}}))
 
 (defn -main [& args]
   (let [{:keys [arguments options summary errors]}
