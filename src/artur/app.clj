@@ -7,19 +7,22 @@
     [reitit.core :as reitit]
     [ring.middleware.defaults :as ring]
 
+    [artur.store :as store]
     [artur.xml :as xml]))
 
 (defstate env
   :start (config/load-env))
 
 (defn handler [req]
-  (prn req)
+  (prn (select-keys req [:params :conversation]))
   {:status 200
    :headers {"content-type" "application/xml"}
+   :conversation {:today (Date.)}
    :body [:Response [:Message "body text"]]})
 
 (def app
   (-> handler
+      store/wrap-conversation
       xml/wrap-xml-document
       (ring/wrap-defaults
         (assoc ring/api-defaults
