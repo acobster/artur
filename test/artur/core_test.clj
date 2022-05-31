@@ -1,7 +1,6 @@
 (ns artur.core-test
   (:require
     [clojure.test :refer [deftest is are]]
-    [kaocha.repl :as k]
     [artur.core :as core]))
 
 (deftest test-state-transitions
@@ -106,4 +105,5 @@
     ))
 
 (comment
+  (require '[kaocha.repl :as k])
   (k/run))

@@ -1,8 +1,7 @@
 (ns artur.xml-test
   (:require
     [artur.xml :as xml]
-    [clojure.test :refer [deftest is are]]
-    [kaocha.repl :as k]))
+    [clojure.test :refer [deftest is are]]))
 
 (deftest renders-xml
   (are
@@ -73,4 +72,5 @@
 
 
 (comment
+  (require '[kaocha.repl :as k])
   (k/run))
