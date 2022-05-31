@@ -30,7 +30,6 @@
       (starts-with? trimmed "http")
       (let [url trimmed
             download (get-in convo [:state url])]
-        (prn url download convo)
         (if download
           {:body (twiml (t (status-key (:status download))))}
           {:body (twiml (t :downloading))
