@@ -4,7 +4,6 @@
     [config.core :as config]
     [mount.core :as mount :refer [defstate]]
     [org.httpkit.server :as http]
-    [reitit.core :as reitit]
     [ring.middleware.defaults :as ring]
 
     [artur.core :as core]
