@@ -4,8 +4,9 @@
   {:en {:sorry "Beep boop, I'm just a robot 🤖"
         :help-text "To get started, send me a torrent file URL."
         :downloading (str "Downloading! I'll notify you when it's finished."
-                          " Text \"update\" to see progress.")
-        :help "help"}
+                          " Text the same URL again for an update.")
+        :help "help"
+        :status/in-progress "In progress"}
 
    :es {:sorry "Lo siento, solo soy un robot 🤖"
         :help-text "Para comenzar, envíeme una URL de archivo torrent."

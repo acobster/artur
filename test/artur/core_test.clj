@@ -20,59 +20,87 @@
     ;; HALP
     {:body [:Response [:Message
                        "To get started, send me a torrent file URL."]]
-     :conversation {:state :waiting-for-url
+     :conversation {:state {}
                     :lang :en}}
     {:params {:Body "help"}
-     :conversation {:state :waiting-for-url
+     :conversation {:state {}
                     :lang :en}}
 
     ;; ...   HALP   ...
     {:body [:Response [:Message
                        "To get started, send me a torrent file URL."]]
-     :conversation {:state :waiting-for-url
+     :conversation {:state {}
                     :lang :en}}
     {:params {:Body "   help   "}
-     :conversation {:state :waiting-for-url
+     :conversation {:state {}
                     :lang :en}}
 
     ;; Test case insensitivity
     {:body [:Response [:Message
                        "To get started, send me a torrent file URL."]]
-     :conversation {:state :waiting-for-url
+     :conversation {:state {}
                     :lang :en}}
     {:params {:Body "   Help   "}
-     :conversation {:state :waiting-for-url
+     :conversation {:state {}
                     :lang :en}}
 
     ;; Robot should understand other languages, too
     {:body [:Response [:Message
                        "Para comenzar, envíeme una URL de archivo torrent."]]
-     :conversation {:state :waiting-for-url
+     :conversation {:state {}
                     :lang :es}}
     {:params {:Body "TODO help"}
-     :conversation {:state :waiting-for-url
+     :conversation {:state {}
                     :lang :es}}
 
     ;; Change languages
     {:body [:Response [:Message
                        "👍 Para comenzar, envíeme una URL de archivo torrent."]]
-     :conversation {:state :waiting-for-url
+     :conversation {:state {}
                     :lang :es}}
     {:params {:Body "lang es"}
-     :conversation {:state :waiting-for-url
+     :conversation {:state {}
                     :lang :en}}
 
     ;; Finally, an actual URL to download...
     {:body [:Response [:Message
                        (str "Downloading! I'll notify you when it's finished."
-                            " Text \"update\" to see progress.")]]
-     :conversation {:state :in-progress
+                            " Text the same URL again for an update.")]]
+     :conversation {:state {"http://example.com/starwars.torrent"
+                            {:status :in-progress}}
                     :lang :en}
      :effects [[:download {:url "http://example.com/starwars.torrent"
                            :from "+12345556789"}]]}
     {:params {:Body "http://example.com/starwars.torrent"
               :From "+12345556789"}
-     :conversation {:state :waiting-for-url
+     :conversation {:state {}
+                    :lang :en}}
+
+    ;; Text the same URL again for an update.
+    {:body [:Response [:Message
+                       ;; TODO get this from rTorrent.
+                       "In progress"]]}
+    {:params {:Body "http://example.com/starwars.torrent"
+              :From "+12345556789"}
+     :conversation {:state {"http://example.com/starwars.torrent"
+                            {:status :in-progress}}
+                    :lang :en}}
+
+    ;; Start a new download with one in progress.
+    {:body [:Response [:Message
+                       (str "Downloading! I'll notify you when it's finished."
+                            " Text the same URL again for an update.")]]
+     :conversation {:state {"http://example.com/starwars.torrent"
+                            {:status :in-progress}
+                            "http://example.com/another.torrent"
+                            {:status :in-progress}}
+                    :lang :en}
+     :effects [[:download {:url "http://example.com/another.torrent"
+                           :from "+12345556789"}]]}
+    {:params {:Body "http://example.com/another.torrent"
+              :From "+12345556789"}
+     :conversation {:state {"http://example.com/starwars.torrent"
+                            {:status :in-progress}}
                     :lang :en}}
 
     ))

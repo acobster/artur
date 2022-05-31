@@ -6,6 +6,9 @@
 (defn- twiml [& strs]
   [:Response [:Message (join " " strs)]])
 
+(defn- status-key [status]
+  (keyword (str "status/" (name status))))
+
 (defn respond [{{text :Body from :From} :params
                 convo :conversation}]
   (let [t (partial i18n/translate (:lang convo :en))
@@ -18,16 +21,21 @@
        :conversation convo}
 
       ;; Robot habla espanol
-      (starts-with? text "lang ")
+      (starts-with? trimmed "lang ")
       (let [lang (keyword (subs text 5))
             t (partial i18n/translate lang)]
         {:body (twiml "👍" (t :help-text))
          :conversation (assoc convo :lang lang)})
 
-      (starts-with? text "http")
-      {:body (twiml (t :downloading))
-       :conversation (assoc convo :state :in-progress)
-       :effects [[:download {:url trimmed :from from}]]}
+      (starts-with? trimmed "http")
+      (let [url trimmed
+            download (get-in convo [:state url])]
+        (prn url download convo)
+        (if download
+          {:body (twiml (t (status-key (:status download))))}
+          {:body (twiml (t :downloading))
+           :conversation (assoc-in convo [:state url :status] :in-progress)
+           :effects [[:download {:url url :from from}]]}))
 
       ;; Robot is confused
       :else

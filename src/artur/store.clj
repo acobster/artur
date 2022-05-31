@@ -26,9 +26,11 @@
   (fn [req]
     (let [from (:From (:params req))
           convo (get-in @state [:conversations from])
-          res (handler (assoc req :conversation convo))]
+          {updated :conversation :as res}
+          (handler (assoc req :conversation convo))]
       ;; NOTE: as long as you're not doing something weird like sending
       ;; multiple concurrent requests per phone number, this is totally
       ;; thread safe.
-      (swap! state assoc-in [:conversations from] (:conversation res))
+      (when updated
+        (swap! state assoc-in [:conversations from] updated))
       res)))
