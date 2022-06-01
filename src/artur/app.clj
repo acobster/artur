@@ -1,5 +1,4 @@
 (ns artur.app
-  (:gen-class)
   (:require
     [config.core :as config]
     [mount.core :as mount :refer [defstate]]
@@ -7,12 +6,11 @@
     [ring.middleware.defaults :as ring]
 
     [artur.core :as core]
+    [artur.config :refer [env]]
     [artur.effects :as fx]
     [artur.store :as store]
-    [artur.xml :as xml]))
-
-(defstate env
-  :start (config/load-env))
+    [artur.xml :as xml])
+  (:gen-class))
 
 (defn handler [req]
   (merge
