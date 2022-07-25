@@ -32,5 +32,6 @@
       ;; multiple concurrent requests per phone number, this is totally
       ;; thread safe.
       (when updated
-        (swap! state assoc-in [:conversations from] updated))
+        (swap! state assoc-in [:conversations from] updated)
+        (spit "resources/state.edn" (prn-str @state)))
       res)))
