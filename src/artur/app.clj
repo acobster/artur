@@ -18,8 +18,13 @@
      :headers {"content-type" "application/xml"}}
     (core/respond req)))
 
+(defn wrap-env [handler]
+  (fn [req]
+    (handler (assoc req :env env))))
+
 (def app
   (-> handler
+      wrap-env
       fx/wrap-effects
       store/wrap-conversation
       xml/wrap-xml-document
