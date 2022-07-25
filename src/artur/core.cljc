@@ -27,7 +27,8 @@
         {:body (twiml "👍" (t :help-text))
          :conversation (assoc convo :lang lang)})
 
-      (or (starts-with? trimmed "http")
+      (or (starts-with? trimmed "http://")
+          (starts-with? trimmed "https://")
           (starts-with? trimmed "magnet:"))
       (let [url trimmed
             download (get-in convo [:state url])]
