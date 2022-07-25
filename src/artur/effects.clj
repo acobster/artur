@@ -1,25 +1,22 @@
 (ns artur.effects
   (:require
+    [clojure.java.shell :refer [sh]]
+    [clojure.string :refer [trim]]
     [artur.config :refer [env]]
     [artur.i18n :as i18n]))
 
 (defmulti effect! first)
 
+(comment
+  (sh "deluge-console" "add" "http://example.com/xxx.torrent"))
+
 (defmethod effect! :download [[_ {:keys [url]}]]
-  (let [file (last (clojure.string/split url #"/"))
-        dir (:download-dir env "./downloads")
-        file-path (str dir java.io.File/separator file)
-        torrent (try
-                  (slurp url)
-                  (catch java.io.FileNotFoundException e
-                    (throw (ex-info "Couldn't download torrent file"
-                                    {:code :could-not-download}
-                                    e))))]
-    (when torrent
-      (when (.mkdir (java.io.File. dir))
-        (println "created directory " dir))
-      (println (format "downloading torrent at %s to %s (%d B)" url file-path (count torrent)))
-      (spit file-path torrent)))
+  (let [{:keys [exit err out]} (sh "deluge-console" "add" url)]
+    (when (seq err)
+      (throw (ex-info "Could not add torrent"
+                      {:code :could-not-download
+                       :message err
+                       :exit exit}))))
   nil)
 
 (defmulti handle-error (fn [e _ _] (:code (ex-data e))))
