@@ -9,7 +9,9 @@
 
         :status/in-progress "In progress"
 
-        :error/could-not-download "Oops! I couldn't download that torrent. Is the URL correct?"}
+        :error/could-not-download "Oops! I couldn't download that torrent. Is the URL correct?"
+        :error/unrecognized-category "Didn't recognize category: %s. Choose one of these: %s"
+        }
 
    :es {:sorry "Lo siento, solo soy un robot 🤖"
         :help-text "Para comenzar, envíeme una URL de archivo torrent."
@@ -18,7 +20,9 @@
 
         :status/in-progress "TODO in progress"
 
-        :error/could-not-download "TODO error could-not-download"}})
+        :error/could-not-download "TODO error could-not-download"
+        :error/unrecognized-category "TODO Didn't recognize category"
+        }})
 
 ;; TODO tongue https://github.com/tonsky/tongue/
 (defn translate [lang k]

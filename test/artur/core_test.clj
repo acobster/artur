@@ -61,6 +61,33 @@
      :conversation {:state {}
                     :lang :en}}
 
+    ;; Add a movie
+    {:body [:Response [:Message
+                       (str "Downloading! I'll notify you when it's finished."
+                            " Text the same URL again for an update.")]]
+     :conversation {:state {"http://example.com/starwars.torrent"
+                            {:status :in-progress}}
+                    :lang :en}
+     :effects [[:download {:url "http://example.com/starwars.torrent"
+                           :path "/home/bob/movies"}]]}
+    {:params {:Body "add movie http://example.com/starwars.torrent"
+              :From "+12345556789"}
+     :env {:target-dirs {"movie" "/home/bob/movies"
+                         "show" "/home/bob/shows"}}
+     :conversation {:state {}
+                    :lang :en}}
+
+    ;; Trying to add a bad category
+    {:body [:Response [:Message
+                       (str "Didn't recognize category: xyz."
+                            " Choose one of these: movie, show")]]}
+    {:params {:Body "add xyz whatever"
+              :From "+12345556789"}
+     :env {:target-dirs {"movie" "/home/bob/movies"
+                         "show" "/home/bob/shows"}}
+     :conversation {:state {}
+                    :lang :en}}
+
     ;; Finally, an actual URL to download...
     {:body [:Response [:Message
                        (str "Downloading! I'll notify you when it's finished."

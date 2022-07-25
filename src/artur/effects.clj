@@ -12,8 +12,9 @@
 (comment
   (sh "deluge-console" "add" "http://example.com/xxx.torrent"))
 
-(defmethod effect! :download [[_ {:keys [url]}] res]
-  (let [{:keys [exit err out]} (sh "deluge-console" "add" url)]
+(defmethod effect! :download [[_ {:keys [url path]}] res]
+  (let [args (if (seq path) ["add" "--path" path url] ["add" url])
+        {:keys [exit err out]} (apply sh "deluge-console" args)]
     (when (seq err)
       (throw (ex-info "Could not add torrent"
                       {:code :could-not-download
