@@ -39,23 +39,42 @@
         (if download
           {:effects [[:check {:url url
                               :id (get-in convo [:state url :deluge-id])}]]}
-          {:body (twiml (t :downloading))
+          {:body (twiml (format (t :downloading) (t :same-url)))
            :conversation (assoc-in convo [:state url :status] :in-progress)
            :effects [[:download {:url url :from from}]]}))
 
       :else
       (match cmd
         ["add" & _]
-        (let [[_ category url] cmd
+        (let [[_ category url & title] cmd
               path (get-in env [:target-dirs category])]
-          (if path
-            {:body (twiml (t :downloading))
-             :conversation (assoc-in convo [:state url :status] :in-progress)
+          (cond
+            (and path title)
+            (let [title (join " " title)]
+              {:body (twiml (format (t :downloading) (t :same-url)))
+               :conversation
+               (-> convo
+                   (assoc-in [:state url :status] :in-progress)
+                   (assoc-in [:titles title] url)
+                   (assoc-in [:state url :title] title))
+               :effects [[:download {:url url :path path :title title}]]})
+            path
+            {:body (twiml (format (t :downloading) (t :same-url)))
+             :conversation
+             (assoc-in convo [:state url :status] :in-progress)
              :effects [[:download {:url url :path path}]]}
+            :else
             {:body (twiml (format
                             (t :error/unrecognized-category)
                             category
                             (->> env :target-dirs keys sort (join ", "))))}))
+
+        ["check" & _]
+        (let [[_ & title] cmd
+              title (join " " title)
+              url (get-in convo [:titles title])
+              id (get-in convo [:state url :deluge-id])]
+          {:effects [[:check {:url url :id id}]]})
 
         :else
         {:body (twiml (t :sorry) (t :help-text))

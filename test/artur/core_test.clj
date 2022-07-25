@@ -61,10 +61,9 @@
      :conversation {:state {}
                     :lang :en}}
 
-    ;; Add a movie
+    ;; "Add movie https://..."
     {:body [:Response [:Message
-                       (str "Downloading! I'll notify you when it's finished."
-                            " Text the same URL again for an update.")]]
+                       "Downloading! Text the same URL again for an update."]]
      :conversation {:state {"http://example.com/starwars.torrent"
                             {:status :in-progress}}
                     :lang :en}
@@ -75,6 +74,35 @@
      :env {:target-dirs {"movie" "/home/bob/movies"
                          "show" "/home/bob/shows"}}
      :conversation {:state {}
+                    :lang :en}}
+
+    ;; "Add movie https://... TITLE"
+    {:body [:Response [:Message
+                       "Downloading! Text the same URL again for an update."]]
+     :conversation {:state {"http://example.com/starwars.torrent"
+                            {:status :in-progress
+                             :title "movie title"}}
+                    :titles {"movie title" "http://example.com/starwars.torrent"}
+                    :lang :en}
+     :effects [[:download {:url "http://example.com/starwars.torrent"
+                           :path "/home/bob/movies"
+                           :title "movie title"}]]}
+    {:params {:Body "Add movie http://example.com/starwars.torrent movie title"
+              :From "+12345556789"}
+     :env {:target-dirs {"movie" "/home/bob/movies"
+                         "show" "/home/bob/shows"}}
+     :conversation {:state {}
+                    :lang :en}}
+
+    ;; "Check TITLE"
+    {:effects [[:check {:url "http://example.com/starwars.torrent"
+                        :id "asdfqwerty"}]]}
+    {:params {:Body "Check movie title"
+              :From "+12345556789"}
+     :conversation {:state {"http://example.com/starwars.torrent"
+                            {:deluge-id "asdfqwerty"
+                             :status :in-progress}}
+                    :titles {"movie title" "http://example.com/starwars.torrent"}
                     :lang :en}}
 
     ;; Trying to add a bad category
@@ -88,10 +116,9 @@
      :conversation {:state {}
                     :lang :en}}
 
-    ;; Finally, an actual URL to download...
+    ;; Just a URL to download...
     {:body [:Response [:Message
-                       (str "Downloading! I'll notify you when it's finished."
-                            " Text the same URL again for an update.")]]
+                       "Downloading! Text the same URL again for an update."]]
      :conversation {:state {"http://example.com/starwars.torrent"
                             {:status :in-progress}}
                     :lang :en}
@@ -114,7 +141,7 @@
 
     ;; Start a new download with one in progress.
     {:body [:Response [:Message
-                       (str "Downloading! I'll notify you when it's finished."
+                       (str "Downloading!"
                             " Text the same URL again for an update.")]]
      :conversation {:state {"http://example.com/starwars.torrent"
                             {:status :in-progress}
