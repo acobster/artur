@@ -76,13 +76,13 @@
                     :lang :en}}
 
     ;; Text the same URL again for an update.
-    {:body [:Response [:Message
-                       ;; TODO get this from rTorrent.
-                       "In progress"]]}
+    {:effects [[:check {:url "http://example.com/starwars.torrent"
+                        :id "asdfqwerty"}]]}
     {:params {:Body "http://example.com/starwars.torrent"
               :From "+12345556789"}
      :conversation {:state {"http://example.com/starwars.torrent"
-                            {:status :in-progress}}
+                            {:deluge-id "asdfqwerty"
+                             :status :in-progress}}
                     :lang :en}}
 
     ;; Start a new download with one in progress.

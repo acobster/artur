@@ -33,7 +33,8 @@
       (let [url trimmed
             download (get-in convo [:state url])]
         (if download
-          {:body (twiml (t (status-key (:status download))))}
+          {:effects [[:check {:url url
+                              :id (get-in convo [:state url :deluge-id])}]]}
           {:body (twiml (t :downloading))
            :conversation (assoc-in convo [:state url :status] :in-progress)
            :effects [[:download {:url url :from from}]]}))

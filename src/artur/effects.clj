@@ -3,21 +3,29 @@
     [clojure.java.shell :refer [sh]]
     [clojure.string :refer [trim]]
     [artur.config :refer [env]]
-    [artur.i18n :as i18n]))
+    [artur.i18n :as i18n]
+    [artur.store :as store]))
 
-(defmulti effect! first)
+(defmulti effect! (fn [effect _]
+                    (first effect)))
 
 (comment
   (sh "deluge-console" "add" "http://example.com/xxx.torrent"))
 
-(defmethod effect! :download [[_ {:keys [url]}]]
+(defmethod effect! :download [[_ {:keys [url]}] res]
   (let [{:keys [exit err out]} (sh "deluge-console" "add" url)]
     (when (seq err)
       (throw (ex-info "Could not add torrent"
                       {:code :could-not-download
                        :message err
                        :exit exit}))))
-  nil)
+  res)
+
+(defmethod effect! :check [[_ {:keys [id]}] res]
+  (let [{:keys [exit err out]} (sh "deluge-console" "info" id)]
+    (assoc res :body [:Response
+                      [:Message
+                       out]])))
 
 (defmulti handle-error (fn [e _ _] (:code (ex-data e))))
 
@@ -32,8 +40,7 @@
 
 (defn- try-effect [effect res]
   (try
-    (effect! effect)
-    res
+    (effect! effect res)
     (catch clojure.lang.ExceptionInfo ex
       (handle-error ex effect res))
     (catch Throwable ex
