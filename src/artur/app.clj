@@ -20,8 +20,8 @@
 
 (def app
   (-> handler
-      store/wrap-conversation
       fx/wrap-effects
+      store/wrap-conversation
       xml/wrap-xml-document
       (ring/wrap-defaults
         (assoc ring/api-defaults
