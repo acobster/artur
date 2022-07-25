@@ -22,8 +22,16 @@
   (fn [req]
     (handler (assoc req :env env))))
 
+(defn wrap-auth [handler]
+  (fn [{{phones :phones} :env {from :From} :params :as req}]
+    (if (contains? phones from)
+      (handler req)
+      {:body ""
+       :status 401})))
+
 (def app
   (-> handler
+      wrap-auth
       wrap-env
       fx/wrap-effects
       store/wrap-conversation
@@ -48,6 +56,8 @@
   (do
     (mount/stop)
     (mount/start))
+
+  (:phones env)
 
   (slurp "http://localhost:3003")
 
