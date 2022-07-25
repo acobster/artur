@@ -44,9 +44,11 @@
 
 (defonce stop-server (atom nil))
 (defstate http-server
-  :start (reset! stop-server (http/run-server
-                               #'app
-                               {:port (:port env 3000)}))
+  :start (let [port (:port env 3000)]
+           (println "Starting on port" port)
+           (reset! stop-server (http/run-server
+                                 #'app
+                                 {:port (:port env 3000)})))
   :stop (when (fn? @stop-server) (@stop-server)))
 
 (defn -main [& _]
