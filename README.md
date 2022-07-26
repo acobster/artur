@@ -4,10 +4,9 @@ A chatbot for initiating torrent downloads. Uses [Twilio](https://www.twilio.com
 
 ## Requirements
 
-* rTorrent, installed on your `PATH`
 * Twilio account, with some webhook setup required
 * A purchased Twilio number, for receiving texts
-* A recent version of Java
+* Docker
 
 ## How it works
 
