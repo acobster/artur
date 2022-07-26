@@ -23,7 +23,7 @@
     (handler (assoc req :env env))))
 
 (defn wrap-auth [handler]
-  (fn [{{phones :phones} :env {from :From} :params :as req}]
+  (fn [{{phones :authorized-numbers} :env {from :From} :params :as req}]
     (if (contains? phones from)
       (handler req)
       {:body ""
@@ -59,7 +59,7 @@
     (mount/stop)
     (mount/start))
 
-  (:phones env)
+  (:authorized-numbers env)
 
   (slurp "http://localhost:3003")
 
