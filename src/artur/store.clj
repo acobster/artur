@@ -3,20 +3,24 @@
   (:require
     [clojure.edn :as edn]
     [clojure.java.io :as io]
-    [mount.core :as mount :refer [defstate]]))
+    [mount.core :as mount :refer [defstate]]
+
+    [artur.config :refer [env]]))
 
 (defonce ^:private state (atom {:conversations {}}))
 
 (defstate load-persisted-state
-  :start (let [persisted (some-> "state.edn"
+  :start (let [persisted (some-> (:state-file env "resources/state.edn")
                                  io/resource
                                  slurp
                                  edn/read-string)]
-           (swap! state merge persisted)))
+           (swap! state merge (or persisted {}))))
 
 (comment
   (reset! state {:conversations {}})
-  (spit "resources/state.edn" "{:conversations {}}")
+  (with-open [w (io/writer "resources/state.edn")]
+    (.write w "{:conversations {}}")
+    (.flush w))
   (deref state))
 
 (defn wrap-conversation
@@ -33,5 +37,7 @@
       ;; thread safe.
       (when updated
         (swap! state assoc-in [:conversations from] updated)
-        (spit "resources/state.edn" (prn-str @state)))
+        (with-open [w (io/writer (:state-file env "resources/state.edn"))]
+          (.write w (prn-str @state))
+          (.flush w)))
       res)))
