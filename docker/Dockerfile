@@ -5,18 +5,18 @@ RUN apt-get update && \
 
 RUN useradd --create-home --shell /bin/bash deluge
 
-RUN mkdir -p /app/deluge && chown -R deluge:deluge /app
+RUN mkdir -p /app/deluge
 WORKDIR /app
-
-USER deluge
 
 COPY deps.edn /app/deps.edn
 COPY build.clj /app/build.clj
-COPY resources /app/resources
+COPY build /app/build
 COPY src /app/src
 
-RUN clojure -T:build uberjar
-
 COPY docker/entrypoint.sh /app/entrypoint.sh
+
+RUN chown -R deluge:deluge /app && clojure -T:build uberjar
+
+USER deluge
 
 ENTRYPOINT ["/bin/sh", "-c", "/app/entrypoint.sh"]

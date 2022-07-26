@@ -2,3 +2,4 @@ config.edn
 state.edn
 /downloads
 /deluge/*
+/target/
