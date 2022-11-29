@@ -18,7 +18,7 @@
                       :version "0.1.0"
                       :basis basis
                       :src-dirs ["src"]})
-    (build/copy-dir {:src-dirs ["src" "build"]
+    (build/copy-dir {:src-dirs ["src"]
                      :target-dir class-dir})
     (build/compile-clj {:basis basis
                         :src-dirc ["src"]

@@ -3,4 +3,5 @@
 # Run in Daemon mode
 /usr/bin/deluged
 
-java -jar /app/target/artur.jar
+# Mount a volume into /app/config to override runtime
+java -cp /app/config -jar /app/target/artur.jar

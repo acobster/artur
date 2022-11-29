@@ -10,7 +10,6 @@ WORKDIR /app
 
 COPY deps.edn /app/deps.edn
 COPY build.clj /app/build.clj
-COPY build /app/build
 COPY src /app/src
 
 COPY docker/entrypoint.sh /app/entrypoint.sh
