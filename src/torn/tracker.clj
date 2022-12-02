@@ -17,9 +17,6 @@
 
 (defonce socket (atom (DatagramSocket. 1112)))
 
-(defn- open-socket! [port]
-  (reset! socket (DatagramSocket. port)))
-
 (defn- empty-message [n]
   (DatagramPacket. (byte-array n) n))
 
@@ -196,16 +193,22 @@
       PushbackInputStream.
       ben/read-bencode)
 
-  (def $torrent (torrent/parse "peppermint.torrent"))
+  (def $torrent
+    (torrent/parse
+      "nixos-plasma.c7dbfc4ce08a90207517338d094a49054f0491d7.torrent"))
   (type ($torrent :announce))
   (count ($torrent :announce))
   (String. ($torrent :announce) "utf-8")
   (announce-url $torrent)
   (torrent/size $torrent)
+  (torrent/info-hash $torrent)
 
   ((juxt #(.getScheme %) #(.getHost %) #(.getPort %))
    (URI. (announce-url $torrent)))
   (parse-url (announce-url $torrent))
+
+  (.close @socket)
+  (reset! socket (DatagramSocket. 1112))
 
   (tx-id)
   (.array (peer-id))
