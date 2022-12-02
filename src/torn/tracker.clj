@@ -212,8 +212,6 @@
   (String. (byte-array (subvec (vec (.array (peer-id))) 0 8)) "utf-8")
 
   (do
-    (.close @socket)
-    (open-socket! 1112)
     (listen! @socket (fn [data sock]
                        (on-response (parse-response data) sock $torrent)))
     (udp-send @socket (conn-req) (announce-url $torrent)))
