@@ -39,6 +39,7 @@
       (when (and socket (not (.isClosed socket)))
         (let [recv-packet (empty-message 1024)]
           (.receive socket recv-packet)
+          (prn 'recieved (.getData recv-packet))
           (f (.getData recv-packet) socket))
         (recur)))))
 
@@ -176,6 +177,7 @@
     (DatagramPacket. arr len addr port)))
 
 (defn- udp-send [socket message url]
+  (prn 'SEND socket message url)
   (.send socket (packet message url)))
 
 #_
