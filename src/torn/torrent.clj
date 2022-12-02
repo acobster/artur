@@ -43,8 +43,3 @@
 
 (defn announce-url [torrent]
   (String. (torrent :announce) "utf-8"))
-
-
-(comment
-  (with-open [in (io/input-stream (io/resource "BigBuckBunny_124_archive.torrent"))]
-    (-> in PushbackInputStream. ben/read-bencode (get "announce") (String. "utf-8"))))
