@@ -7,13 +7,13 @@
     [torn.torrent :as torrent])
   (:import
     [java.nio ByteBuffer]
-    [java.net DatagramSocket DatagramPacket InetAddress URL]))
+    [java.net DatagramSocket DatagramPacket InetAddress URI URL]))
 
 (defn- parse-url [url]
-  (let [url* (URL. url)]
-    {:protocol (.getProtocol url*)
-     :host (.getHost url*)
-     :port (.getPort url*)}))
+  (let [uri (URI. url)]
+    {:protocol (.getScheme uri)
+     :host (.getHost uri)
+     :port (.getPort uri)}))
 
 (defonce socket (atom (DatagramSocket. 1112)))
 
@@ -196,15 +196,15 @@
       PushbackInputStream.
       ben/read-bencode)
 
-  (def $torrent (torrent/parse "BigBuckBunny_124_archive.torrent"))
+  (def $torrent (torrent/parse "peppermint.torrent"))
   (type ($torrent :announce))
   (count ($torrent :announce))
   (String. ($torrent :announce) "utf-8")
   (announce-url $torrent)
   (torrent/size $torrent)
 
-  ((juxt #(.getProtocol %) #(.getHost %) #(.getPort %))
-   (URL. (announce-url $torrent)))
+  ((juxt #(.getScheme %) #(.getHost %) #(.getPort %))
+   (URI. (announce-url $torrent)))
   (parse-url (announce-url $torrent))
 
   (tx-id)
