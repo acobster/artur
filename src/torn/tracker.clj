@@ -38,10 +38,12 @@
     (loop []
       (when (and socket (not (.isClosed socket)))
         (let [recv-packet (empty-message 1024)]
+          (prn 'receiving...)
           (.receive socket recv-packet)
-          (prn 'recieved (.getData recv-packet))
-          (f (.getData recv-packet) socket))
-        (recur)))))
+          (prn 'received (.getData recv-packet))
+          (prn 'calling f)
+          (f (.getData recv-packet) socket)
+          (recur))))))
 
 (def tx-ids (cycle (range 1000 Integer/MAX_VALUE)))
 (defonce tx-idx (atom 0))
@@ -63,12 +65,8 @@
 (defn- betw [buf start end]
   (String. (byte-array (map #(.get buf %) (range start end))) "utf-8"))
 
-(defmethod on-response :connect
-  [{:response/keys [transaction-id connection-id]} socket torrent]
-  (when-let [[req tid] (announce-req connection-id torrent)]
-    (prn 'announce tid)
-    (prn :peer-id (betw req 36 44) :hash (betw req 16 36) :port (.getShort req 96))
-    (udp-send socket req (announce-url torrent))))
+(defn- announce-url [torrent]
+  (String. (:announce torrent) "utf-8"))
 
 (defn- put-str [buf i s]
   (let [str-bytes (.getBytes s)
@@ -141,8 +139,6 @@
 (defn- peer [buf offset])
 
 (defmethod response 1 [buf]
-  ;; TODO
-  (reset! $res buf)
   ;; Peers are 6 bytes each: 4 for IP addr and 2 for port.
   {:response/action :announce
    :response/timestamp (inst-ms (java.util.Date.))
@@ -156,7 +152,9 @@
                                       (range 0 4))
                         ip (string/join "." ip-bytes)
                         port (.getShort buf (+ idx 4))]
-                    (conj peers {:ip ip :port port})))
+                    (if (= [0 0 0 0] ip-bytes)
+                      (reduced peers)
+                      (conj peers {:ip ip :port port}))))
                 [] (range 20 (- (.limit buf) 4) 6)))})
 
 (comment
@@ -165,8 +163,8 @@
   (response @$res))
 
 (defmethod on-response :announce
-  [{:response/keys [transaction-id interval seeders leechers peers LEN]} socket torrent]
-  (prn 'response transaction-id interval (format "S/L: %d/%d" seeders leechers) LEN 'bytes)
+  [{:response/keys [transaction-id interval seeders leechers peers]} socket torrent]
+  (prn 'response transaction-id interval (format "S/L: %d/%d" seeders leechers))
   (prn (count peers) 'peers peers))
 
 (defn- packet [msg-buf url]
@@ -180,13 +178,21 @@
   (prn 'SEND socket message url)
   (.send socket (packet message url)))
 
-#_
 (defn get-peers [torrent socket f]
   (let [url (announce-url torrent)]
     (udp-send socket (conn-req) (announce-url torrent))))
 
+(defmethod on-response :connect
+  [{:response/keys [transaction-id connection-id]} socket torrent]
+  (when-let [[req tid] (announce-req connection-id torrent)]
+    (prn 'announce tid)
+    (prn :peer-id (betw req 36 44) :hash (betw req 16 36) :port (.getShort req 96))
+    (udp-send socket req (announce-url torrent))))
+
 (comment
   (require '[clojure.repl :refer [doc]])
+
+  (deref socket)
 
   ((juxt .getPort) (InetAddress/getByName "localhost:8000"))
 
@@ -205,18 +211,20 @@
   (torrent/size $torrent)
   (torrent/info-hash $torrent)
 
+  (get-peers $torrent @socket #())
+
   ((juxt #(.getScheme %) #(.getHost %) #(.getPort %))
    (URI. (announce-url $torrent)))
   (parse-url (announce-url $torrent))
 
-  (.close @socket)
-  (reset! socket (DatagramSocket. 1112))
 
   (tx-id)
   (.array (peer-id))
   (String. (byte-array (subvec (vec (.array (peer-id))) 0 8)) "utf-8")
 
   (do
+    (.close @socket)
+    (reset! socket (DatagramSocket. 1112))
     (listen! @socket (fn [data sock]
                        (on-response (parse-response data) sock $torrent)))
     (udp-send @socket (conn-req) (announce-url $torrent)))
