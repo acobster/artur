@@ -76,8 +76,6 @@
 (defmethod on-response :connect
   [{:response/keys [transaction-id connection-id]} socket torrent]
   (let [req (announce-req connection-id torrent)]
-    (prn #_req (announce-url torrent))
-    #_
     (udp-send socket req (announce-url torrent))))
 
 (defmethod on-response :announce
@@ -112,7 +110,7 @@
   (with-open [in (io/input-stream (io/resource "BigBuckBunny_124_archive.torrent"))]
     (-> in PushbackInputStream. ben/read-bencode (get "announce") (String. "utf-8")))
 
-  (def $torrent (parse "BigBuckBunny_124_archive.torrent"))
+  (def $torrent (parse "big-buck-bunny.5e7886d42a52ae66da4541d88882a04f9a34a649.torrent"))
   (type ($torrent "announce"))
   (count ($torrent "announce"))
   (String. ($torrent "announce") "utf-8")

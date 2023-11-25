@@ -8,6 +8,10 @@
     (= "5e7886d42a52ae66da4541d88882a04f9a34a649"
        (-> "big-buck-bunny.5e7886d42a52ae66da4541d88882a04f9a34a649.torrent"
            torrent/parse
+           torrent/info-hash))
+    (= "fcf8424bc3006e21678eb4b3389bb1bc6bca4ef6"
+       (-> "nixos-minimal.fcf8424bc3006e21678eb4b3389bb1bc6bca4ef6.torrent"
+           torrent/parse
            torrent/info-hash))))
 
 (comment

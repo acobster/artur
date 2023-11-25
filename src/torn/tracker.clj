@@ -197,7 +197,7 @@
 
   (def $torrent
     (torrent/parse
-      "nixos-plasma.c7dbfc4ce08a90207517338d094a49054f0491d7.torrent"))
+      "big-buck-bunny.5e7886d42a52ae66da4541d88882a04f9a34a649.torrent"))
   (type ($torrent :announce))
   (count ($torrent :announce))
   (String. ($torrent :announce) "utf-8")
